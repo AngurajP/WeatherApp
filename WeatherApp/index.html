@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherAPP</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <h1>Weather App</h1>
+    <div class="card">
+        <div class="search">
+            <input type="text" class="search-box" id = "input" placeholder="enter your city" autocomplete="off">
+            <span><img id="crossimg" src="./images/cross.png"  onclick="remove()"></span>
+            <button class="search-btn">Search</button>
+            <!-- <img src="./images/search.png" alt="search-icon"> -->
+        </div>
+        <div class="weather">
+            <img src="./images/clouds.png" alt="cloud-img" class="weather-icon">
+            <h2 class="city"></h2>
+            <div class="row" id="detailsrow">
+                <div class="col" id="mindetail">
+                    <h1>Min_Temp<span class="min_temp"></span></h1>
+                </div>
+                <div class="col" id="maxdetail">
+                    <h1>Max_Temp<span class="max_temp"></span></h1>
+                </div>
+            </div>
+            
+            <div class="details">
+                <div class="col">
+                    <img src="./images/humidity.png" alt="humidity">
+                    <div>
+                    <p class="humidity"></p>
+                    <p class="text">Humidity</p>
+                </div>
+                </div>
+                <div class="col">
+                    <img src="./images/wind.png" alt="wind">
+                    <div>
+                    <p class="wind"></p>
+                    <p class="text">Wind speed</p>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // select first all require fileds 
+        // apiKey,apiurl,place,temperature,searchBox,searchBtn,weatherImage,weatherdiv,errorPara
+        const apiKey = "c84e7c3db38c9d1297c32b640ca612b4";
+        const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+        const place = document.querySelector(".city");
+        const Mintemperature = document.querySelector(".min_temp");
+        const Maxtemperature = document.querySelector(".max_temp");
+        const searchBox = document.querySelector(".search-box");
+        const searchBtn = document.querySelector(".search-btn");
+        const weatherImage = document.querySelector(".weather-icon");
+        const weatherdiv = document.querySelector('.weather');
+        const errorPara = document.querySelector('.error');
+        const card = document.querySelector(".card");
+    // async function start
+        async function weather(city) {
+            // fetch apiurl, city and then apikey these values stored from variable response 
+            const response = await fetch(apiUrl + city +`&appid=${apiKey}`);
+            // check response is valid or not using if condition
+            if (response.status == 404) {
+                // response not valid show error message
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Please enter correct city name"
+                });                
+            } else {
+                // response valid show weather details
+                var data = await response.json();
+                console.log(data);
+            place.innerHTML = data.name;
+            Mintemperature.innerHTML =data.main.temp_min + "°C";
+            Maxtemperature.innerHTML =data.main.temp_max + "°C";
+            document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+            document.querySelector(".wind").innerHTML = data.wind.speed + "Km/h";
+            // show weather image based weather condition
+            if (data.weather[0].main == "Clouds") {
+                card.style.background = "linear-gradient(135deg,rgb(198, 221, 47),rgb(83, 195, 27))";
+                weatherImage.src = "images/clouds.png";
+            }
+            else if (data.weather[0].main == "Clear") {
+                card.style.background = "linear-gradient(135deg,rgb(198, 201, 147),rgb(83, 195, 27))";
+                weatherImage.src = "images/clear.png";
+            }
+            else if (data.weather[0].main == "Drizzle") {
+                card.style.background = "linear-gradient(135deg,rgb(148, 131, 147),rgb(83, 155, 27))";
+                weatherImage.src = "images/drizzle.png";
+            }
+            else if (data.weather[0].main == "Mist") {
+                card.style.background = "linear-gradient(135deg,rgb(148, 131, 147),rgb(83, 155, 27))";
+                weatherImage.src = "images/mist.png";
+            }
+            else if (data.weather[0].main == "Rain") {
+                card.style.background = "linear-gradient(135deg,rgb(148, 131, 147),rgb(83, 155, 27))";
+                weatherImage.src = "images/rain.png";
+            }
+            else if (data.weather[0].main == "Snow") {
+                card.style.background = "linear-gradient(135deg,rgb(148, 131, 147),rgb(83, 155, 27))";
+                weatherImage.src = "images/snow.png";
+            }
+            else if (data.weather[0].main == "Haze") {
+                card.style.background = "linear-gradient(135deg,rgb(148, 131, 147),rgb(83, 155, 27))";
+                weatherImage.src = "images/snow.png";
+            }
+            weatherdiv.style.display = "block";
+            errorPara.style.display = "none";
+            }
+            
+        }
+        // function call from whenever searchBtn is click
+        searchBtn.addEventListener('click',()=>{
+            if (searchBox.value === '') {
+                weatherdiv.style.display = "none";
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Please enter city name"
+                });
+            } else {
+                // pass city as parameter
+                document.getElementById('crossimg').style.display = 'block';
+                weather(searchBox.value);
+            }
+            });
+
+            function remove() {
+                weatherdiv.style.display = "none";
+                let a = document.getElementById('input');
+                a.value = "";
+                card.style.background= 'linear-gradient(135deg,rgb(47, 169, 221),rgb(195, 131, 27))';
+
+            }
+        
+    </script>
+
+</body>
+</html>
